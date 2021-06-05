@@ -1,43 +1,369 @@
 ---
-title: "MyLabJournal"
-output: html_document
+title: "Case Study-Cyclistic Bike Share"
+author: "Author: Vrinda Marwah"
+date: "Last Modified: 1st June,2021"
+output:
+  rmdformats::readthedown:
+    code_folding: "hide"
+  
 ---
 
-<style type="text/css">
-.title {
-  display: none;
-}
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,fig.align="center",fig.width = 20,fig.height = 10,out.width = "1000%",warning = FALSE)
+```
 
-#getting-started img {
-  margin-right: 10px;
-}
+## Introduction
+I finished my case study on "Cyclistic," a fictional bikeshare firm situated in Chicago, Illinois. The company owns and operates a fleet of over 5000 bicycles that are geotracked and locked into a network of over 600 stations across Chicago.The company serves two types of customers-casual riders(those who purchase single-ride or full-day passes) and annual members(those who purchase annual memberships).Since annual membership is more profitable for the company, the marketing director was interested in maximizing the number of annual members by creating marketing strategies that aid in the conversion of more casual riders to annual members.My responsibility was to make data-driven recommendations for the marketing campaign.
 
+## Problem Statement
+To learn more about how annual members and casual riders use Cyclistic bikes differently.
+
+***
+
+## About the Dataset
+I used the "Divvy Bikeshare Dataset," which is owned by the "Divvy" bikesharing company. The data is a third-party dataset made public by Motivate International Inc., the firm that runs the Divvy bike-sharing service.
+
+The link to the dataset: <https://divvy-tripdata.s3.amazonaws.com/index.html>
+
+Data is available starting from the year 2013 till year 2021 (until April).The dataset includes fields such as-type of bike rented,start and end dates of the journey,type of rider (casual/annual member) etc.The dataset is structured in the form of spreadsheets that contain both numerical as well as categorical data.For the purpose of my analysis,I used data from the years 2020-2021(until April)
+
+**Credibility of the data:** Divvy permits Motivate Inc. to make certain system data owned by them to be made available to the public.The data is current,completely updated and cited.
+
+The link to the license-agreement: <https://www.divvybikes.com/data-license-agreement>
+
+The data cannot be hosted, streamed, or published as a standalone dataset under the terms of the licence. Furthermore, customers' personal information such as addresses, names, and other identifiers should not be used in any way.
+
+**Issues with the data:** In some of the spreadsheets, the column names are inconsistent, and there is missing data.
+
+***
+
+## Installing and Loading Packages
+For my project,I used various packages in R Studio,such as, **Tidyverse**, **Lubridate** (for datetime functions), **Tidyr** (for data-cleaning), **ggplot2** (for creating visualizations) and many others.
+
+```{r}
+library(tidyverse)
+library(readr)
+library(dplyr)
+library(tidyr)
+library(lubridate)
+library(ggplot2)
+
+```
+
+***
+
+## Importing the Dataset
+I used the **read_csv()** function of **Readr** package for importing the datasets in R Studio.
+
+```{r importing data}
+data_apr2020<-read_csv("C:/Users/Vrinda Marwah/Desktop/Case Study/csv files/202004-divvy-tripdata.csv")
+data_may2020<-read_csv("C:/Users/Vrinda Marwah/Desktop/Case Study/csv files/202005-divvy-tripdata.csv")
+data_jun2020<-read_csv("C:/Users/Vrinda Marwah/Desktop/Case Study/csv files/202006-divvy-tripdata.csv")
+data_jul2020<-read_csv("C:/Users/Vrinda Marwah/Desktop/Case Study/csv files/202007-divvy-tripdata.csv")
+data_aug2020<-read_csv("C:/Users/Vrinda Marwah/Desktop/Case Study/csv files/202008-divvy-tripdata.csv")
+data_sept2020<-read_csv("C:/Users/Vrinda Marwah/Desktop/Case Study/csv files/202009-divvy-tripdata.csv")
+data_oct2020<-read_csv("C:/Users/Vrinda Marwah/Desktop/Case Study/csv files/202010-divvy-tripdata.csv")
+data_nov2020<-read_csv("C:/Users/Vrinda Marwah/Desktop/Case Study/csv files/202011-divvy-tripdata.csv")
+data_dec2020<-read_csv("C:/Users/Vrinda Marwah/Desktop/Case Study/csv files/202012-divvy-tripdata.csv")
+data_jan2021<-read_csv("C:/Users/Vrinda Marwah/Desktop/Case Study/csv files/202101-divvy-tripdata.csv")
+data_feb2021<-read_csv("C:/Users/Vrinda Marwah/Desktop/Case Study/csv files/202102-divvy-tripdata.csv")
+data_mar2021<-read_csv("C:/Users/Vrinda Marwah/Desktop/Case Study/csv files/202103-divvy-tripdata.csv")
+data_apr2021<-read_csv("C:/Users/Vrinda Marwah/Desktop/Case Study/csv files/202104-divvy-tripdata.csv")
+
+```
+
+***
+
+## Data Cleaning
+
+**1. Making Datatypes Consistent**
+
+I noticed that in the datasets starting from December 2020 - April 2021,the columns **start_station_id** and **end_station_id** were of **character** datatype while the two fields were of **double** datatype in the datasets from April 2020 - November 2020.To ensure consistency across all fields in my datasets,I converted the two fields to character type in all the datasets.
+
+```{r}
+data_apr2020<-data_apr2020 %>%
+mutate(start_station_id=as.character(start_station_id),end_station_id=as.character(end_station_id))
+
+data_may2020<-data_may2020 %>% 
+mutate(start_station_id=as.character(start_station_id),end_station_id=as.character(end_station_id))
+
+data_jun2020<-data_jun2020 %>% 
+mutate(start_station_id=as.character(start_station_id),end_station_id=as.character(end_station_id))
+
+data_jul2020<-data_jul2020 %>% 
+mutate(start_station_id=as.character(start_station_id),end_station_id=as.character(end_station_id)) 
+
+data_aug2020<-data_aug2020 %>% 
+  mutate(start_station_id=as.character(start_station_id),end_station_id=as.character(end_station_id))
+
+data_sept2020<-data_sept2020 %>% 
+  mutate(start_station_id=as.character(start_station_id),end_station_id=as.character(end_station_id))
+
+data_oct2020<-data_oct2020 %>% 
+  mutate(start_station_id=as.character(start_station_id),end_station_id=as.character(end_station_id))
+
+data_nov2020<-data_nov2020 %>% 
+  mutate(start_station_id=as.character(start_station_id),end_station_id=as.character(end_station_id))
+
+```
+
+**Combining all the Datasets**
+
+I used the **rbind()** function to combine all the csv files into one single dataset.
+
+```{r}
+all_data<-rbind(data_apr2020,data_may2020,data_jun2020,data_jul2020,data_aug2020,data_sept2020,data_oct2020,data_nov2020,data_dec2020,data_jan2021,data_feb2021,data_mar2021,data_apr2021)
+
+str(all_data)
+```
+
+**2. Removing Unnecessary Fields**
+
+Since the **start_lat** and the **end_lng** fields were not relevant to my analysis,therefore,I excluded the two fields from the dataset.
+
+```{r}
+final_all_data<-all_data %>% select(-(start_lat:end_lng))
+str(final_all_data)
+```
+
+**3. Removing Missing Values**
+
+Since some rows had missing data across all columns,I used the **drop_na()** function to remove all NA values(missing data).
+
+```{r}
+final_all_data<-drop_na(final_all_data)
+str(final_all_data)
+```
+
+**4. Converting to Datetime**
+
+Since the fields **start_dt** and **end_dt** were of **character** datatype , I converted them to **datetime** format.
+
+```{r}
+final_all_data$started_at<-dmy_hm(final_all_data$start_dt)
+final_all_data$ended_at<-dmy_hm(final_all_data$end_dt)
+str(final_all_data)
+```
+
+**5. Introducing New Columns**
+
+For the purpose of my analysis, I introduced some new columns in my dataset,namely,ride length (duration of rides taken by both types of customers), day of the week (which day(s) of the week is preferred by the two categories) and month (which day(s) of the week is preferred by the two)
+
+```{r}
+final_all_data<-final_all_data %>% mutate(ride_length=round((difftime(ended_at,started_at,units='mins')),2))
+final_all_data<-final_all_data %>% mutate(day_of_week=weekdays(started_at))
+final_all_data<-final_all_data %>% mutate(date=as.Date(started_at)) %>% mutate(month=format(as.Date(date),"%B"))
+
+```
+
+**6. Dealing with Erroneous Data**
+
+Because the **ride length** can't be less than 0 minutes and can't be greater than 24 hours (1440 minutes), I removed any data that could've led to skewed results of my analysis. I also removed the **start dt** and **end dt** fields that I no longer needed.
+
+```{r}
+all_data_comp <- final_all_data[!(final_all_data$ride_length <= 0 | final_all_data$ride_length > 1440),]
+full_data_cl<-all_data_comp %>% select(-(start_dt:end_dt))
+str(full_data_cl)
+
+```
+
+***
+
+## Analysis Phase
+
+To determine the **average duration of ride** for both categories of customers, I used several **central tendency measures** such as **mean** and **median**. I also calculated the minimum and maximum ride durations for both categories.
+
+```{r}
+full_data_cl%>% summarise(ride_length_mean=mean(ride_length),ride_length_max=max(ride_length),ride_length_min=min(ride_length),ride_length_median=median(ride_length))
+
+```
+
+Also, in order to better understand my data, I calculated all four metrics separately for both categories.
+
+```{r}
+aggregate(full_data_cl$ride_length ~ full_data_cl$rider_type,FUN=mean)
+aggregate(full_data_cl$ride_length ~ full_data_cl$rider_type,FUN=median)
+aggregate(full_data_cl$ride_length ~ full_data_cl$rider_type,FUN=min)
+aggregate(full_data_cl$ride_length ~ full_data_cl$rider_type,FUN=max)
+```
+
+I calculated the average bike duration for both groups on various days of the week.
+
+```{r}
+
+full_data_cl$day_of_week <- ordered(full_data_cl$day_of_week, levels = c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))
+aggregate(full_data_cl$ride_length ~ full_data_cl$rider_type+full_data_cl$day_of_week,FUN=mean)
+aggregate(full_data_cl$ride_length ~ full_data_cl$rider_type+full_data_cl$day_of_week,FUN=median)
+
+```
+
+I estimated the number of rides taken by both groups of cyclists on various days of the week.
+
+```{r}
+full_data_cl %>% group_by(rider_type,day_of_week) %>% summarise(No_of_rides=n(),.groups = 'drop') %>% arrange(day_of_week)
+```
+
+Further, I calculated the month-wise average,max and min duration of rides taken by both categories
+
+```{r}
+full_data_cl$month<-ordered(full_data_cl$month,levels=c('January','February','March','April','May','June','July','August','September','October','November','December'))
+aggregate(full_data_cl$ride_length~full_data_cl$month,FUN=mean)
+aggregate(full_data_cl$ride_length~full_data_cl$month,FUN=median)
+aggregate(full_data_cl$ride_length~full_data_cl$month,FUN=min)
+aggregate(full_data_cl$ride_length~full_data_cl$month,FUN=max)
+
+```
+
+For both groups of cyclists, I determined the average monthly ride duration.
+
+```{r}
+full_data_cl %>% group_by(rider_type,month) %>% summarise(Mean_ride_len=mean(ride_length)) %>% arrange(month)
+full_data_cl %>% group_by(rider_type,month) %>% summarise(Median_ride_len=median(ride_length)) %>% arrange(month)
+
+```
+
+ I computed the number of rides taken by both types of cyclists in different months of the year.
+
+```{r}
+full_data_cl %>% group_by(rider_type,month) %>% summarise(No_of_rides=n(),.groups = 'drop') %>% arrange(month)
+
+```
+
+***
+
+## Creating Visualizations
+
+```{r class.source='fold-hide'}
+full_data_cl %>% group_by(rider_type,day_of_week) %>% summarise(Avg_Ride_Len=median(ride_length)) %>% 
+  ggplot(aes(x=day_of_week,y=Avg_Ride_Len,fill=rider_type))+geom_bar(stat='identity',colour="black")+
+  scale_fill_manual("Rider Type", values = c("casual" = "darkorange", "member" = "#008080"))+
+  labs(title="Average Ride Length: Casual v/s Member",subtitle = "The average ride duration (in mins) on each day of the week for both types of riders")+
+  theme(plot.title=element_text(hjust = 0.5,size=27,vjust=-5))+
+  theme(plot.subtitle = element_text(hjust=0.5,vjust=-10,size=18))+      
+  theme(axis.text.x = element_text(face="bold",colour="black",size=12))+
+  theme(panel.background = element_blank(),axis.text.x = element_text(vjust=10),axis.ticks.x = element_blank(),axis.ticks.y=element_blank(),axis.text.y = element_blank(),axis.title = element_blank())+
+  geom_text(aes(label=Avg_Ride_Len),vjust=-1.5,colour = "black", size = 7)+
+  ylim(0,30)+facet_wrap(~rider_type)+theme(strip.background = element_blank())+theme(strip.text = element_blank())+
+  theme(legend.position = c(0.95,0.8))
+```
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 </style>
+<div class = "blue">
 
-<div class="row" style="padding-top: 30px;">
-<div class="col-sm-6">
-
-# **My Lab Journal**
-
-This is a template example for lab journaling. Students in Matt Crump's Human Cognition and Performance Lab will use this template to learn R, and other things. Students can replace this text with more fun things. People not in my lab can use this too.
-
-## How to use
-
-1. fork the repo for this website and follow instructions on read me to get set up. [https://github.com/CrumpLab/LabJournalWebsite](https://github.com/CrumpLab/LabJournalWebsite)
-
-2. Blog/journal what you are doing in R, by editing the Journal.Rmd. See the [Journal page](https://crumplab.github.io/LabJournalWebsite/Journal.html) for an example of what to do to get started learning R.
-
-3. See the [links page](https://crumplab.github.io/LabJournalWebsite/Links.html) for lots of helpful links on learning R.
-
-4. Change everything to make it your own.
-
+- The barplot above depicts the average duration of bike trips taken by both types of riders on different days of the week. 
+- We can observe from the graph that casual cyclists are more likely to ride for longer periods of time on weekends. The duration remain roughly identical on the rest of the days.
+- On the other hand,the trend for annual members isn't substantially different on different days of the week.
 
 </div>
-<div class="col-sm-6">
 
-### [Crump Lab: Human Cognition and Performance](https://crumplab.github.io)
+```{r}
+full_data_cl %>% group_by(rider_type,month) %>% summarise(Avg_Ride_Len=median(ride_length)) %>% 
+  ggplot(aes(x=month,y=Avg_Ride_Len,fill=rider_type))+geom_bar(position="dodge",stat='identity',colour="black")+
+  scale_fill_manual("Rider Type", values = c("casual" = "darkorange", "member" = "#008080"))+
+  labs(title="Average Ride Length: Casual v/s Member",subtitle = "The average ride duration per month for both types of riders")+
+  theme(plot.title=element_text(hjust = 0.9,size=26,vjust=-8))+
+  theme(plot.subtitle = element_text(hjust=0.9,vjust=-14,size=18))+
+  theme(panel.background = element_blank(),axis.text.y=element_blank(),axis.ticks.x = element_blank(),axis.ticks.y = element_blank(),axis.title.x = element_blank(),axis.title.y = element_blank())+
+  theme(axis.text.x = element_text(size=12,face="bold",colour="black",vjust = 8))+
+  theme(legend.position = c(0.05,0.8))+geom_text(aes(label=Avg_Ride_Len),position=position_dodge(width=0.9),vjust=-1,colour="black",size=7)
 
-<a href = "https://crumplab.github.io">
-![](images/logo.png)
-</a>
+```
+
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+
+- The barplot above depicts the average length of bike rides taken by both types of cyclists over various months of the year. 
+- We can observe from the graph that during peak summer season (May-August), casual members are more likely to bike for longer periods of time
+
 </div>
+
+```{r}
+full_data_cl %>% group_by(month, rider_type) %>% summarise(number_of_ride = n(), .groups = 'drop') %>% 
+filter(rider_type == 'casual') %>% ggplot(aes(x = month, y = number_of_ride)) + geom_bar(stat = 'identity', colour = "black", fill = "darkorange") + 
+labs(title="Number of Rides Taken By Casual Riders",subtitle="The number of rides taken by casual riders per month ") + 
+theme(plot.title=element_text(hjust = 0.05, size = 30, vjust = -13)) + 
+  theme(plot.subtitle = element_text(hjust=0.04,vjust=-27,size=18))+
+theme(axis.text.x = element_text(face = "bold", colour = "black", size = 15,vjust=8)) +
+theme(axis.text.y = element_blank(),panel.background = element_blank(), axis.line = element_blank(), axis.ticks.x = element_blank(),axis.ticks.y=element_blank(), 
+axis.title = element_blank())+geom_text(aes(label=number_of_ride),vjust=-1,colour="black",size=5)
+ 
+ 
+```
+
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+
+- The barplot depicts the number of bike rides taken by casual riders during various months of the year.
+- We can observe that casual members had a stronger tendency to take up more rides during early fall (July-Sept)
+- The month of February sees the lowest number of rides.
+
+</div>
+
+```{r}
+
+ full_data_cl %>%group_by(start_station, rider_type) %>%summarise(number_of_ride = n(), .groups = 'drop') %>%
+filter(start_station != "", rider_type != 'member') %>%arrange(-number_of_ride) %>%head(n=10) %>%select(-rider_type) %>% 
+ggplot(aes(x=start_station,y=number_of_ride))+geom_bar(stat="identity",colour="black",fill="darkorange")+
+theme(axis.text.x = element_blank()) +theme(axis.text.y = element_text(face = "bold", colour = "black", size = 15)) +
+theme(panel.background = element_blank(), axis.line = element_blank(), axis.ticks.y = element_blank(), axis.ticks.x=element_blank(),axis.title=element_blank())+coord_flip()+geom_text(aes(label=number_of_ride),size=6,hjust=-0.1)
+
+```
+
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+
+- The barplot above depicts the top ten stations from where the company get's most of it's casual riders. 
+- We can see from the graph that maximum number of casual riders start their bike journey from the following three stations:-
+   1. Streeter Dr & Grand Ave 
+   2. Millenium Park
+   3. Lake Shore Dr & Monroe St.
+
+</div>
+
+***
+
+## My Recommendations
+
+<style>
+div.blue { background-color:#FFC3A0; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+
+1. A "10-day bike streak" program that rewards casual cyclists with a discount on annual memberships as well as some attractive goodies if they ride for more than 25 minutes for 10 days in a row. This will enable the company to market the annual membership program as well as attract more number of casual riders to weekday rides.
+
+2. Since a large number of casual riders prefer to take more rides from July to September, the company may introduce a "Early Fall Offer" for a limited time, in which casual riders receive attractive discounts on annual memberships.
+
+3. Promoting the annual membership program through display boards, posters, and fliers at the three stations where the majority of casual riders come from, with the most successful strategies being expanded to less popular stations later.
+
+</div>
+
+***
+
+                                            **Thanks for Reading!**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
